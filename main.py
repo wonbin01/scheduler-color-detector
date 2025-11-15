@@ -21,8 +21,9 @@ async def extract_color(
     image_file: UploadFile = File(...), 
     document_data_json: str = Form(...) 
 ):
+    clean_json_string = document_data_json.replace('\n', '').replace('\r', '').replace(' ','').strip()
     try:
-        json_dict=json.loads(document_data_json)
+        json_dict=json.loads(clean_json_string)
         data: DocumentData=DocumentData.parse_obj(json_dict)
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="유효한 JSON 형식이 아닙니다.")
