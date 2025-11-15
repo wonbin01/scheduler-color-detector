@@ -62,17 +62,31 @@ async def extract_color(
         
         results.append({
             "cell_id": cell.cell_id,
-            "absolute_bbox": [int(min_x), int(min_y), int(max_x), int(max_y)],
             "average_color_bgr": avg_bgr
         })
+        
+    color_info=classify_color(results)
+    print(color_info)
+    return color_info
 
-    # 5. 최종 결과 반환
-    return {
-        "status": "success",
-        "message": f"이미지 분석 완료. {len(results)}개의 셀 색상 추출.",
-        "image_size": f"{actual_width}x{actual_height}",
-        "cell_results": results
-    }
+def classify_color(results):
+    classified=[]
+    for cell in results:
+        id=cell["cell_id"]
+        b,g,r=cell["average_color_bgr"]
+        if(max(b,g,r) - min(b,g,r) < 10):
+            category="매점"
+        elif b>r+10:
+            category="웰컴"
+        elif r>b+10:
+            category="엔젤"
+        else:
+            category="기타"
+        classified.append({
+            "cell_id" : id,
+            "position" : category
+        })
+    return classified       
 
 # 헬스 체크용 엔드포인트
 @app.get("/health")
