@@ -18,10 +18,12 @@ app = FastAPI()
 
 @app.post("/extract/colorInfo")
 async def extract_color(
-    image_file: UploadFile = File(...), 
-    document_data_json: str = Form(...) 
+    document_data_json: str = Form(...),
+    image_file: UploadFile = File(...) 
 ):
     clean_json_string = document_data_json.replace('\n', '').replace('\r', '').replace(' ','').strip()
+    print("celan_json_string: ",clean_json_string)
+    print("file name: ",image_file.filename)
     try:
         json_dict=json.loads(clean_json_string)
         data: DocumentData=DocumentData.parse_obj(json_dict)
